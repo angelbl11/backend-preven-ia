@@ -1,0 +1,8 @@
+{
+  "name": "backend_preven_ia",
+  "version": "0.0.1",
+  "main": "index.js",
+  "repository": "git@angelbl11.github.com:angelbl11/backend-preven-ia.git",
+  "author": "angelbl11",
+  "license": "MIT"
+}
