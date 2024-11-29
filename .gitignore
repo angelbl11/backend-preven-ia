@@ -1,6 +1,13 @@
-node_modules
+# Node dependencies
+node_modules/
 yarn.lock
+
+# MacOS
 .DS_Store
-uploads
-.secrets
+
+# Environment variables
 .env
+secrets/
+
+# Uploads folder    
+uploads/
