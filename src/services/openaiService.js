@@ -23,8 +23,10 @@ exports.processTextWithOpenAI = async (text) => {
       messages: [
         {
           role: "system",
-          content: `A continuación, tienes un formato JSON para el análisis clínico. Sigue este formato al procesar los datos y genera un diagnóstico basado en la información proporcionada   
+          content: `A continuación, tienes un formato JSON para el análisis clínico. Sigue este formato al procesar los datos y genera un diagnóstico basado en la información proporcionada.
+          identifica todos y cada uno de los parametros clinicos en el texto y escribelos en base a la instruccion siguiente:   
           ${JSON.stringify(formatOutput, null, 2)} 
+          Sigue las instrucciones en el apartado instruccion, no escribas la instruccion en el formato final.
           Por favor, llena las secciones con la información extraída y proporcióname un diagnóstico completo.
           Si la información proporcionada no coincide con un análisis clínico, regresa exactamente "${archiveError}"`,
         },
