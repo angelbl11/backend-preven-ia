@@ -7,11 +7,16 @@ module.exports = (req, res, next) => {
     });
   };
 
-  res.successResponse = (data, message = "Operation successful") => {
+  res.successResponse = (
+    data,
+    message = "Operation successful",
+    readable_message = null
+  ) => {
     res.json({
       success: true,
       message: message,
       data: data,
+      readable_message: readable_message || message,
     });
   };
 
