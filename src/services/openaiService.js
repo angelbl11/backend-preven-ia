@@ -48,36 +48,6 @@ exports.processTextWithOpenAI = async (text) => {
     }
 
     console.log("Estructura del JSON devuelto:", parsedResult);
-
-    const outputDir = path.join(__dirname, "../output");
-
-    // Intentar acceder al nombre del paciente desde el JSON
-    const nombrePaciente =
-      parsedResult?.analisis_clinico?.datos_personales?.nombre ||
-      parsedResult?.data?.["file info"]?.analisis_clinico?.datos_personales?.nombre ||
-      "paciente_sin_nombre";
-
-    if (nombrePaciente === "paciente_sin_nombre") {
-      console.warn("No se encontró el nombre del paciente en los datos.");
-    }
-
-    // Crear un nombre de archivo seguro
-    const safeFileName = nombrePaciente.replace(/[^a-z0-9]/gi, "_").toLowerCase(); 
-    const fileName = `${safeFileName}.js`;
-    const filePath = path.join(outputDir, fileName);
-
-    // Crear el directorio si no existe
-    if (!fs.existsSync(outputDir)) {
-      fs.mkdirSync(outputDir, { recursive: true });
-    }
-
-    // Formatear el contenido como un módulo JS
-    const formattedResult = `module.exports = ${JSON.stringify(parsedResult, null, 2)};`;
-
-    fs.writeFileSync(filePath, formattedResult, "utf8");
-
-    console.log(`Resultado guardado en: ${filePath}`);
-    return parsedResult;
   } catch (error) {
     console.error("Error processing text with OpenAI:", error);
     throw error;
