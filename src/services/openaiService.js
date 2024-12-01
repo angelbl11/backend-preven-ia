@@ -46,7 +46,6 @@ exports.processTextWithOpenAI = async (text) => {
       console.error("Respuesta no válida como JSON:", result);
       throw new Error("La respuesta de OpenAI no es un JSON válido.");
     }
-
     console.log("Estructura del JSON devuelto:", parsedResult);
   } catch (error) {
     console.error("Error processing text with OpenAI:", error);
