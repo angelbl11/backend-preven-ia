@@ -8,7 +8,7 @@ exports.processFile = async (req, res) => {
 
     fs.unlinkSync(filePath);
 
-    res.successResponse({ "file info": text }, "File processed successfully");
+    res.successResponse(text, "File processed successfully");
   } catch (error) {
     if (!req.file) {
       res.errorResponse(

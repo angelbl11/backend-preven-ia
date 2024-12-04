@@ -1,50 +1,45 @@
-const { admin, db } = require("../config/firebase");
+const { auth, db } = require("../config/firebase");
+const bcrypt = require("bcrypt");
 
-/// Prod otp verification
-exports.verifyPhoneNumber = async (idToken) => {
+exports.registerUser = async (phoneNumber, password, personalInfo) => {
   try {
-    const decodedToken = await admin.auth().verifyIdToken(idToken);
-
-    return {
-      userId: decodedToken.uid,
-      phoneNumber: decodedToken.phone_number,
-    };
-  } catch (error) {
-    console.error("Error verifying phone number:", error);
-  }
-};
-
-exports.registerUser = async (userId, phoneNumber, additionalData) => {
-  try {
-    const userDoc = await db.collection("users").doc(userId).get();
-
-    if (userDoc.exists) {
-      console.error("User already exists");
-    }
-
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const userRecord = await auth.createUser({
+      phoneNumber,
+    });
     const newUser = {
-      id: userId,
+      id: userRecord.uid,
       phone_number: phoneNumber,
-      additional_data: additionalData,
+      password: hashedPassword,
+      personal_info: personalInfo,
       created_at: new Date().toISOString(),
     };
 
-    await db.collection("users").doc(userId).set(newUser);
+    await db.collection("users").doc(userRecord.uid).set(newUser);
 
     return newUser;
   } catch (error) {
     console.error("Error registering user:", error);
+    throw new Error("Error registering user");
   }
 };
 
-exports.loginUser = async (userId) => {
+exports.loginUser = async (phoneNumber, password) => {
   try {
-    const userDoc = await db.collection("users").doc(userId).get();
-    if (!userDoc.exists) {
-      console.error("User does not exist");
-      throw new Error("User does not exist");
+    const usersCollection = await db.collection("users");
+    const querySnapshot = await usersCollection
+      .where("phone_number", "==", phoneNumber)
+      .get();
+    if (querySnapshot.empty) {
+      throw new Error("User not found");
     }
-    return userDoc.data();
+    const userDoc = querySnapshot.docs[0];
+    const userData = userDoc.data();
+    const isPasswordValid = await bcrypt.compare(password, userData.password);
+    if (!isPasswordValid) {
+      throw new Error("Invalid password");
+    }
+    return userData;
   } catch (e) {
     console.error("Error logging in user:", e);
     throw new Error("Error logging in user", e.message);

@@ -10,15 +10,14 @@
   "author": "angelbl11",
   "license": "MIT",
   "dependencies": {
-    "body-parser": "^1.20.3",
+    "bcrypt": "^5.1.1",
     "dotenv": "^16.4.5",
     "express": "^4.21.1",
-    "firebase": "^11.0.2",
     "firebase-admin": "^13.0.0",
-    "morgan": "^1.10.0",
     "multer": "^1.4.5-lts.1",
     "openai": "^4.73.0",
-    "pdf-parse": "^1.1.1"
+    "pdf-parse": "^1.1.1",
+    "uuid": "^11.0.3"
   },
   "devDependencies": {
     "nodemon": "^3.1.7"
