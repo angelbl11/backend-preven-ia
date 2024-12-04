@@ -1,20 +1,21 @@
 const { db } = require("../config/firebase");
-const { v4: uuidv4 } = require("uuid");
 
-exports.saveClinicalAnalysis = async (patientId, analysisData) => {
+/**
+ * Guarda un análisis clínico en una colección fija en Firestore.
+ * @param {string} fileName - Nombre del archivo que será guardado.
+ * @param {object} analysisData - Datos del análisis clínico.
+ */
+exports.saveClinicalAnalysis = async (fileName, analysisData) => {
   try {
-    const patientRef = db.collection("patients").doc(patientId); // Referencia al documento del paciente
-    const analysisId = uuidv4(); // Generar un ID único para el análisis
+    // Nueva carpeta fija para guardar los análisis
+    const collectionName = "clinical_analyses";
 
-    // Guardar los datos del análisis en la subcolección del paciente
-    await patientRef.collection("clinical_analyses").doc(analysisId).set({
-      ...analysisData,
-      createdAt: new Date().toISOString(),
-    });
+    const docRef = db.collection(collectionName).doc(fileName);
+    await docRef.set(analysisData);
 
-    console.log(`Análisis clínico guardado para el paciente ${patientId}`);
+    console.log(`Análisis clínico guardado en Firestore en ${collectionName}/${fileName}`);
   } catch (error) {
-    console.error("Error al guardar análisis clínico:", error);
+    console.error("Error al guardar el análisis clínico:", error);
     throw error;
   }
 };

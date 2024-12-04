@@ -1,25 +1,26 @@
 const { extractTextFromFile } = require("../services/fileService");
 const { processTextWithOpenAI } = require("../services/openaiService");
 
+/**
+ * Procesa un archivo PDF y guarda el análisis clínico.
+ */
 exports.processFile = async (req, res) => {
   try {
-    const { file } = req;
+    const filePath = req.file.path; // Ruta del archivo subido
+    const extractedText = await extractTextFromFile(filePath);
 
-    if (!file) {
-      return res.errorResponse("No file provided.", 400);
-    }
+    const analysisResult = await processTextWithOpenAI(extractedText);
 
-    const text = await extractTextFromFile(file.path);
-
-    // ID fijo del paciente por ahora
-    const patientId = "e9sAfzwRNfkQOZ99AALkXOxmWsJO2";
-
-    // Pasar el ID del paciente al servicio
-    const result = await processTextWithOpenAI(text, patientId);
-
-    return res.successResponse(result, "Analysis processed successfully.");
+    res.status(200).json({
+      success: true,
+      message: "Archivo procesado y análisis clínico guardado exitosamente.",
+      data: analysisResult,
+    });
   } catch (error) {
-    console.error("Error processing file:", error);
-    return res.errorResponse(error.message || "File processing failed.");
+    console.error("Error procesando el archivo:", error);
+    res.status(500).json({
+      success: false,
+      error: error.message,
+    });
   }
 };

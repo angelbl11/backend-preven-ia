@@ -3,7 +3,6 @@ const path = require("path");
 const { OPENAI_API_KEY } = require("../config/env");
 const formatOutput = require("./formatOutput");
 const { saveClinicalAnalysis } = require("./analysisService");
-const patientId = "e9sAfzwRNfkQOZ99AALkXOxmWsJO2";
 
 let OpenAI;
 
@@ -51,9 +50,13 @@ exports.processTextWithOpenAI = async (text) => {
 
     console.log("Estructura del JSON devuelto:", parsedResult);
 
-    await saveClinicalAnalysis(patientId, parsedResult);
+   // Redirigir a la carpeta fija con un archivo genérico
+   const fileName = `analysis_${Date.now()}`;
+   await saveClinicalAnalysis(fileName, parsedResult);
 
-    return parsedResult;
+   console.log(`Análisis clínico procesado y guardado como: ${fileName}`);
+
+   return parsedResult;
 
   } catch (error) {
     console.error("Error processing text with OpenAI:", error);
