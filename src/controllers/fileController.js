@@ -14,7 +14,7 @@ exports.processFile = async (req, res) => {
     fs.unlinkSync(filePath);
 
     res.successResponse(
-      { "file info": openAIResponse },
+      openAIResponse,
       "File processed and analyzed successfully"
     );
   } catch (error) {
