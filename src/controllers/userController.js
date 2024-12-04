@@ -25,6 +25,13 @@ exports.register = async (req, res) => {
     );
   } catch (e) {
     console.error("Error registering user:", e);
+    if (e.message === "Phone number already registered") {
+      return res.errorResponse(
+        e.message,
+        409,
+        "Número de teléfono ya registrado"
+      );
+    }
     res.errorResponse(e.message, 500, "Error registrando usuario");
   }
 };
@@ -49,6 +56,10 @@ exports.login = async (req, res) => {
     );
   } catch (e) {
     console.error("Error logging in user:", e);
+    if (e.message === "User not found") {
+      return res.errorResponse(e.message, 404, "Usuario no registrado");
+    }
+
     res.errorResponse(e.message, 400, "Error autenticando usuario");
   }
 };
