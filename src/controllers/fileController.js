@@ -1,36 +1,25 @@
-const fileService = require("../services/fileService");
-const openaiService = require("../services/openaiService");
-const fs = require("fs");
+const { extractTextFromFile } = require("../services/fileService");
+const { processTextWithOpenAI } = require("../services/openaiService");
 
 exports.processFile = async (req, res) => {
   try {
-    const filePath = req.file.path; // Ruta del archivo subido
-    const fileId = req.body.fileId; // Identificador único del archivo (si aplica)
+    const { file } = req;
 
-    // Obtener el ID del paciente desde Firebase usando el fileId
-    const patientId = await analysisService.getPatientIdFromFile(fileId);
-
-    if (!patientId) {
-      return res.status(400).json({
-        success: false,
-        message: "No se pudo encontrar el ID del paciente asociado al archivo.",
-      });
+    if (!file) {
+      return res.errorResponse("No file provided.", 400);
     }
 
-    const extractedText = await fileService.extractTextFromFile(filePath);
-    const analysisResult = await openaiService.processTextWithOpenAI(extractedText, patientId);
+    const text = await extractTextFromFile(file.path);
 
-    res.status(200).json({
-      success: true,
-      message: "Análisis procesado y guardado exitosamente",
-      data: analysisResult,
-    });
+    // ID fijo del paciente por ahora
+    const patientId = "e9sAfzwRNfkQOZ99AALkXOxmWsJO2";
+
+    // Pasar el ID del paciente al servicio
+    const result = await processTextWithOpenAI(text, patientId);
+
+    return res.successResponse(result, "Analysis processed successfully.");
   } catch (error) {
-    console.error("Error al procesar el archivo:", error);
-    res.status(500).json({
-      success: false,
-      message: "Error al procesar el archivo",
-      error: error.message,
-    });
+    console.error("Error processing file:", error);
+    return res.errorResponse(error.message || "File processing failed.");
   }
 };
