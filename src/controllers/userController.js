@@ -1,41 +1,25 @@
 const userService = require("../services/userService");
-const otpService = require("../services/otpService");
 
 exports.register = async (req, res) => {
   try {
-    //   const { idToken, additionalData } = req.body; -> Prod code
-    const { phoneNumber, additionalData } = req.body; // -> Test code
-    await otpService.sendOTP(phoneNumber);
-    // if (!idToken) {
-    //   return res.errorResponse(
-    //     "Invalid request",
-    //     400,
-    //     "Se necesita un token de autenticación"
-    //   );
-    // }
-    // const { userId, phoneNumber } = await userService.verifyPhoneNumber(
-    //   idToken
-    // ); -> Prod code
+    const { phoneNumber, password, personalInfo } = req.body;
 
-    const userId = `test-uid-${phoneNumber}`; // -> Test code
-
-    const newUser = await userService.registerUser(
-      userId,
-      phoneNumber,
-      additionalData || {}
-    );
-
-    if (!newUser || Object.keys(newUser).length === 0) {
-      res.errorResponse(
-        "Error registering user",
-        500,
-        "Error registrando usuario"
+    if (!phoneNumber || !password) {
+      return res.errorResponse(
+        "Invalid request",
+        400,
+        "Se necesita un número de teléfono y una contraseña"
       );
-      throw new Error("Error registering user");
     }
 
+    const newUser = await userService.registerUser(
+      phoneNumber,
+      password,
+      personalInfo
+    );
+
     res.successResponse(
-      { user: newUser },
+      newUser,
       "User registered successfully",
       "Usuario registrado exitosamente"
     );
@@ -47,37 +31,19 @@ exports.register = async (req, res) => {
 
 exports.login = async (req, res) => {
   try {
-    // const { idToken } = req.body;
-    // if (!idToken) {
-    //   return res.errorResponse(
-    //     "Invalid request",
-    //     400,
-    //     "Se necesita un token de autenticación"
-    //   );
-    // } -> Prod code
-
-    const { phoneNumber, otpCode } = req.body; // -> Test code
-    if (!phoneNumber || !otpCode) {
+    const { phoneNumber, password } = req.body;
+    if (!phoneNumber || !password) {
       return res.errorResponse(
         "Invalid request",
         400,
-        "Se necesitan el número de teléfono y el código OTP."
+        "Se necesita un número de teléfono y una contraseña"
       );
     }
 
-    const verificationId = `test-verification-id-${phoneNumber}`;
-    await otpService.verifyOTP(verificationId, otpCode);
+    const userData = await userService.loginUser(phoneNumber, password);
 
-    // const { userId } = await userService.verifyPhoneNumber(idToken); -> Prod code
-    const userId = `test-uid-${phoneNumber}`; // -> Test code
-    const userData = await userService.loginUser(userId);
-
-    if (!userData || Object.keys(userData).length === 0) {
-      res.errorResponse("User does not exist", 404, "Usuario no encontrado");
-      throw new Error("User does not exist");
-    }
     res.successResponse(
-      { user: userData },
+      userData,
       "User logged in successfully",
       "Usuario autenticado exitosamente"
     );
