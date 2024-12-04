@@ -1,5 +1,6 @@
 const { auth, db } = require("../config/firebase");
 const bcrypt = require("bcrypt");
+const { v4: uuidv4 } = require("uuid");
 
 exports.registerUser = async (phoneNumber, password, personalInfo) => {
   try {
@@ -7,8 +8,10 @@ exports.registerUser = async (phoneNumber, password, personalInfo) => {
     const userRecord = await auth.createUser({
       phoneNumber,
     });
+    const userId = uuidv4();
     const newUser = {
       id: userRecord.uid,
+      userId: userId,
       phone_number: phoneNumber,
       password: hashedPassword,
       personal_info: personalInfo,
@@ -20,6 +23,9 @@ exports.registerUser = async (phoneNumber, password, personalInfo) => {
     return newUser;
   } catch (error) {
     console.error("Error registering user:", error);
+    if (error.code === "auth/phone-number-already-exists") {
+      throw new Error("Phone number already registered");
+    }
     throw new Error("Error registering user");
   }
 };
@@ -42,6 +48,9 @@ exports.loginUser = async (phoneNumber, password) => {
     return userData;
   } catch (e) {
     console.error("Error logging in user:", e);
+    if (e.message === "User not found") {
+      throw new Error("User not found");
+    }
     throw new Error("Error logging in user", e.message);
   }
 };
