@@ -31,3 +31,25 @@ exports.saveClinicalAnalysis = async (patientId, analysisData) => {
     throw error;
   }
 };
+
+/**
+ * Obtiene el ID del paciente asociado a un archivo desde Firebase.
+ * @param {string} fileId - Identificador único del archivo.
+ * @returns {Promise<string>} - ID del paciente asociado.
+ */
+exports.getPatientIdFromFile = async (fileId) => {
+  try {
+    const fileDoc = await db.collection("uploaded_files").doc(fileId).get();
+
+    if (!fileDoc.exists) {
+      console.error(`No se encontró el archivo con ID: ${fileId}`);
+      return null;
+    }
+
+    const fileData = fileDoc.data();
+    return fileData.patientId || null; // Retorna el ID del paciente si existe
+  } catch (error) {
+    console.error("Error al obtener el ID del paciente desde Firebase:", error);
+    throw error;
+  }
+};

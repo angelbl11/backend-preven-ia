@@ -6,7 +6,7 @@ const upload = multer({ dest: "uploads/" });
 const router = express.Router();
 
 router.post(
-  "/extract-text-from-file",
+  "/extract-content",
   upload.single("file"),
   fileController.processFile
 );

@@ -50,11 +50,6 @@ exports.processTextWithOpenAI = async (text) => {
     }
     console.log("Estructura del JSON devuelto:", parsedResult);
 
-    const patientId =
-      parsedResult?.analisis_clinico?.datos_personales?.id_paciente ||
-      `paciente_${uuidv4()}`;
-
-
     // Guardar el análisis clínico en Firestore
     await saveClinicalAnalysis(patientId, parsedResult);
 
