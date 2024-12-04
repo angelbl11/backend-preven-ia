@@ -2,6 +2,8 @@ const fs = require("fs");
 const path = require("path");
 const { OPENAI_API_KEY } = require("../config/env");
 const formatOutput = require("./formatOutput");
+const { saveClinicalAnalysis } = require("./analysisService");
+const { v4: uuidv4 } = require("uuid"); // Genera IDs únicos
 
 let OpenAI;
 
@@ -47,6 +49,15 @@ exports.processTextWithOpenAI = async (text) => {
       throw new Error("La respuesta de OpenAI no es un JSON válido.");
     }
     console.log("Estructura del JSON devuelto:", parsedResult);
+
+    const patientId =
+      parsedResult?.analisis_clinico?.datos_personales?.id_paciente ||
+      `paciente_${uuidv4()}`;
+
+
+    // Guardar el análisis clínico en Firestore
+    await saveClinicalAnalysis(patientId, parsedResult);
+
   } catch (error) {
     console.error("Error processing text with OpenAI:", error);
     throw error;
