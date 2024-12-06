@@ -47,13 +47,9 @@ exports.processTextWithOpenAI = async (text) => {
       throw new Error("La respuesta de OpenAI no es un JSON válido.");
     }
 
-    console.log("Estructura del JSON devuelto:", parsedResult);
-
    // Redirigir a la carpeta fija con un archivo genérico
    const fileName = `analysis_${Date.now()}`;
    await saveClinicalAnalysis(fileName, parsedResult);
-
-   console.log(`Análisis clínico procesado y guardado como: ${fileName}`);
 
    return parsedResult;
 
