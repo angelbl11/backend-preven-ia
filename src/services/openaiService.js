@@ -1,7 +1,7 @@
 const fs = require("fs");
-const path = require("path");
 const { OPENAI_API_KEY } = require("../config/env");
 const formatOutput = require("./formatOutput");
+const { saveClinicalAnalysis } = require("./fileService");
 
 let OpenAI;
 
@@ -46,7 +46,13 @@ exports.processTextWithOpenAI = async (text) => {
       console.error("Respuesta no válida como JSON:", result);
       throw new Error("La respuesta de OpenAI no es un JSON válido.");
     }
-    console.log("Estructura del JSON devuelto:", parsedResult);
+
+   // Redirigir a la carpeta fija con un archivo genérico
+   const fileName = `analysis_${Date.now()}`;
+   await saveClinicalAnalysis(fileName, parsedResult);
+
+   return parsedResult;
+
   } catch (error) {
     console.error("Error processing text with OpenAI:", error);
     throw error;

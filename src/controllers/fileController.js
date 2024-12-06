@@ -1,31 +1,26 @@
-const fileService = require("../services/fileService");
-const openaiService = require("../services/openaiService");
-const fs = require("fs");
+const { extractTextFromFile } = require("../services/fileService");
+const { processTextWithOpenAI } = require("../services/openaiService");
 
+/**
+ * Procesa un archivo PDF y guarda el análisis clínico.
+ */
 exports.processFile = async (req, res) => {
   try {
-    const filePath = req.file.path;
-    const text = await fileService.extractTextFromFile(filePath);
+    const filePath = req.file.path; // Ruta del archivo subido
+    const extractedText = await extractTextFromFile(filePath);
 
-    // Llamar a OpenAI
-    const openAIResponse = await openaiService.processTextWithOpenAI(text);
+    const analysisResult = await processTextWithOpenAI(extractedText);
 
-    // Eliminar archivo después de procesarlo
-    fs.unlinkSync(filePath);
-
-    res.successResponse(
-      openAIResponse,
-      "File processed and analyzed successfully"
-    );
+    res.status(200).json({
+      success: true,
+      message: "Archivo procesado y análisis clínico guardado exitosamente.",
+      data: analysisResult,
+    });
   } catch (error) {
-    if (!req.file) {
-      res.errorResponse(
-        "No file selected",
-        400,
-        "No se seleccionó ningún archivo"
-      );
-    } else {
-      res.errorResponse(error.message, 500);
-    }
+    console.error("Error procesando el archivo:", error);
+    res.status(500).json({
+      success: false,
+      error: error.message,
+    });
   }
 };
