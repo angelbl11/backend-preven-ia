@@ -1,6 +1,6 @@
 const formatOutput = {
     clinical_analysis: {
-      datos_personales: {
+      personal_info: {
         instruccion: "escribe el nombre de los objetos en ingles pero los contenidos en español",
         name: "",
         age: "",
@@ -12,7 +12,7 @@ const formatOutput = {
         parametro_2: "",
         parametro_n: ""
       },
-      diagnostico_final: {
+      final_diagnostic: {
         instruccion: "No escribas este apartado en el formato final. Para los siguientes campos, escribe un resumen de los parametros relacionados a la enfermedad y describe una opinion medica haciendo alucion al estado y probabilidad del paciente de tener esta enferemedad, escribe como si estubieras hablando directamente con el paciente",
         diabetes: "",
         hypertension: "",
