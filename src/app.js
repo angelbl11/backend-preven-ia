@@ -1,7 +1,7 @@
 const express = require("express");
 const routes = require("./routes");
 const responseMiddleware = require("./middlewares/responseMiddleware");
-const analysisRoutes = require("./routes/analysisRoutes");
+const analysisRoutes = require("./routes/fileRoutes");
 
 const app = express();
 

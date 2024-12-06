@@ -1,8 +1,7 @@
 const fs = require("fs");
-const path = require("path");
 const { OPENAI_API_KEY } = require("../config/env");
 const formatOutput = require("./formatOutput");
-const { saveClinicalAnalysis } = require("./analysisService");
+const { saveClinicalAnalysis } = require("./fileService");
 
 let OpenAI;
 

@@ -6,7 +6,7 @@ yarn.lock
 .DS_Store
 
 # Environment variables
-.env/
+.env
 secrets/
 
 # Uploads folder    
