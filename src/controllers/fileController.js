@@ -1,4 +1,4 @@
-const { extractTextFromFile } = require("../services/fileService");
+const { extractTextFromFile, saveContentDb } = require("../services/fileService");
 const { processTextWithOpenAI } = require("../services/openaiService");
 
 /**
@@ -6,10 +6,18 @@ const { processTextWithOpenAI } = require("../services/openaiService");
  */
 exports.processFile = async (req, res) => {
   try {
+    const patientID = req.body.patientID;
+
+    if (!patientID) {
+      throw new Error("El patientID es obligatorio para procesar el archivo.");
+    }
+
     const filePath = req.file.path; // Ruta del archivo subido
     const extractedText = await extractTextFromFile(filePath);
+    const documentId = `pdf_${patientID}`;
+    await saveContentDb(extractedText, documentId);
 
-    const analysisResult = await processTextWithOpenAI(extractedText);
+    const analysisResult = await processTextWithOpenAI(extractedText, patientID);
 
     res.status(200).json({
       success: true,
