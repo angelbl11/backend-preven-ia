@@ -19,6 +19,8 @@ exports.processFile = async (req, res) => {
 
     const analysisResult = await processTextWithOpenAI(extractedText, patientID);
 
+    exports.patientID = patientID;
+
     res.status(200).json({
       success: true,
       message: "Archivo procesado y análisis clínico guardado exitosamente.",

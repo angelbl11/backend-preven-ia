@@ -2,10 +2,12 @@ const express = require("express");
 const multer = require("multer");
 const fileController = require("../controllers/fileController");
 const db = require("../config/firebase");
-
+const Id = require("../controllers/fileController");
 
 const upload = multer({ dest: "uploads/" });
 const router = express.Router();
+
+let patientID = Id.patientID
 
 router.post(
   "/extract-content",
@@ -18,10 +20,9 @@ router.post(
  * Ruta para obtener un análisis clínico por ID.
  */
 router.get("/:id", async (req, res) => {
-  const { id } = req.params;
-
+  const patientID = req.params.id;
   try {
-    const doc = await db.collection("clinical_analyses").doc(id).get();
+    const doc = await db.collection("clinical_analyses").doc(`analyses_${patientID}`).get();
     if (!doc.exists) {
       return res.status(404).json({ error: "Análisis clínico no encontrado." });
     }

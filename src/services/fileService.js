@@ -3,14 +3,6 @@ const path = require("path");
 const pdf = require("pdf-parse");
 const { db } = require("../config/firebase");
 
-// Define el directorio de salida
-const outputDir = path.join(__dirname, "../output");
-
-// Verifica si el directorio existe; si no, lo crea
-if (!fs.existsSync(outputDir)) {
-  fs.mkdirSync(outputDir, { recursive: true });
-}
-
 /**
  * Extrae texto de un archivo PDF.
  * @param {string} filePath - Ruta del archivo PDF.
