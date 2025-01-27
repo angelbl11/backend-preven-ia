@@ -2,20 +2,32 @@ const userService = require("../services/userService");
 
 exports.register = async (req, res) => {
   try {
-    const { phoneNumber, password, personalInfo } = req.body;
+    const { phoneNumber, password, personalInfo, height, weight } = req.body;
 
-    if (!phoneNumber || !password) {
+    if (!phoneNumber || !password || !height || !weight) {
       return res.errorResponse(
         "Invalid request",
         400,
-        "Se necesita un número de teléfono y una contraseña"
+        "Se necesita un número de teléfono, una contraseña, estatura y peso"
       );
     }
 
+    // Validar que height y weight sean numéricos
+    if (isNaN(height) || isNaN(weight)) {
+      return res.errorResponse(
+        "Invalid height or weight",
+        400,
+        "La estatura y el peso deben ser valores numéricos"
+      );
+    }
+
+    // Registrar el usuario con los nuevos campos
     const newUser = await userService.registerUser(
       phoneNumber,
       password,
-      personalInfo
+      personalInfo,
+      parseFloat(height), // Asegurar que sean números
+      parseFloat(weight)  // Asegurar que sean números
     );
 
     res.successResponse(

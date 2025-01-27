@@ -10,7 +10,7 @@ let OpenAI;
   OpenAI = ImportedOpenAI;
 })();
 
-exports.processTextWithOpenAI = async (text) => {
+exports.processTextWithOpenAI = async (text, patientID) => {
   try {
     const openai = new OpenAI({
       apiKey: OPENAI_API_KEY,
@@ -48,7 +48,7 @@ exports.processTextWithOpenAI = async (text) => {
     }
 
    // Redirigir a la carpeta fija con un archivo genérico
-   const fileName = `analysis_${Date.now()}`;
+   const fileName = `analysis_${patientID}`;
    await saveClinicalAnalysis(fileName, parsedResult);
 
    return parsedResult;
