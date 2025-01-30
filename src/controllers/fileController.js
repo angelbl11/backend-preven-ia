@@ -6,7 +6,7 @@ const { processTextWithOpenAI } = require("../services/openaiService");
  */
 exports.processFile = async (req, res) => {
   try {
-    const patientID = req.body.patientID;
+    const patientID = 123;
 
     if (!patientID) {
       throw new Error("El patientID es obligatorio para procesar el archivo.");

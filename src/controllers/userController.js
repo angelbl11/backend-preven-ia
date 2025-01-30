@@ -2,13 +2,13 @@ const userService = require("../services/userService");
 
 exports.register = async (req, res) => {
   try {
-    const { phoneNumber, password, personalInfo, height, weight } = req.body;
+    const { phoneNumber, password, name, birthDate, height, weight } = req.body;
 
-    if (!phoneNumber || !password || !height || !weight) {
+    if (!phoneNumber || !password || !height || !weight || !name || !birthDate) {
       return res.errorResponse(
         "Invalid request",
         400,
-        "Se necesita un número de teléfono, una contraseña, estatura y peso"
+        "Se necesita un número de teléfono, una contraseña, nombre, dia de nacimiento, estatura y peso"
       );
     }
 
@@ -25,7 +25,8 @@ exports.register = async (req, res) => {
     const newUser = await userService.registerUser(
       phoneNumber,
       password,
-      personalInfo,
+      name,
+      birthDate,
       parseFloat(height), // Asegurar que sean números
       parseFloat(weight)  // Asegurar que sean números
     );

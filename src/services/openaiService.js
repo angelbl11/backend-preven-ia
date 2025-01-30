@@ -19,7 +19,7 @@ exports.processTextWithOpenAI = async (text, patientID) => {
     const archiveError = "El archivo no coincide con un reporte de análisis clínico.";
 
     const response = await openai.chat.completions.create({
-      model: "gpt-3.5-turbo",
+      model: "ft:gpt-3.5-turbo-0125:prevenia:obesityml:AtgX71sA",
       messages: [
         {
           role: "system",
