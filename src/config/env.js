@@ -3,5 +3,5 @@ require("dotenv").config();
 module.exports = {
   PORT: process.env.PORT || 3000,
   UPLOAD_DIR: "uploads",
-  OPENAI_API_KEY: process.env.OPENAI_API_KEY,
+  GOOGLE_API_KEY: process.env.GOOGLE_API_KEY,
 };

@@ -1,12 +1,12 @@
 const { extractTextFromFile, saveContentDb } = require("../services/fileService");
-const { processTextWithOpenAI } = require("../services/openaiService");
+const { processTextWithGemini } = require("../services/googleService"); // Update the import to use Gemini
 
 /**
  * Procesa un archivo PDF y guarda el análisis clínico.
  */
 exports.processFile = async (req, res) => {
   try {
-    const patientID = 123;
+    const patientID = req.body.patientID;
 
     if (!patientID) {
       throw new Error("El patientID es obligatorio para procesar el archivo.");
@@ -14,10 +14,7 @@ exports.processFile = async (req, res) => {
 
     const filePath = req.file.path; // Ruta del archivo subido
     const extractedText = await extractTextFromFile(filePath);
-    const documentId = `pdf_${patientID}`;
-    await saveContentDb(extractedText, documentId);
-
-    const analysisResult = await processTextWithOpenAI(extractedText, patientID);
+    const analysisResult = await processTextWithGemini(extractedText, patientID); // Use Gemini for processing
 
     exports.patientID = patientID;
 

@@ -39,30 +39,3 @@ exports.saveClinicalAnalysis = async (fileName, analysisData) => {
     throw error;
   }
 };
-
-/**
- * Guarda el contenido extraído en Firestore.
- * @param {string} documentId - ID del documento en Firestore.
- * @param {string} textContent - Contenido extraído del PDF.
- */
-exports.saveContentDb = async (content, documentId) => {
-  try {
-    if (!content || !documentId) {
-      throw new Error("El contenido y el ID del documento son obligatorios.");
-    }
-
-    // Referencia a la colección "pdf_contents" con el documento específico
-    const docRef = db.collection("pdf_contents").doc(documentId);
-
-    // Guardar el contenido como un campo en el documento
-    await docRef.set({
-      content,
-      timestamp: new Date(),
-    });
-
-    console.log(`Contenido guardado en Firestore con ID: ${documentId}`);
-  } catch (error) {
-    console.error("Error al guardar el contenido en Firestore:", error);
-    throw error;
-  }
-};
