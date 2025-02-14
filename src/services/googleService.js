@@ -2,6 +2,7 @@ const fs = require("fs");
 const { GOOGLE_API_KEY } = require("../config/env");
 const formatOutput = require("./formatOutput");
 const { saveClinicalAnalysis } = require("./fileService");
+const { getObesityRisk, getDiabetesRisk, getHypertensionRisk } = require("./dataService");
 const {
   GoogleGenerativeAI,
   HarmCategory,
@@ -69,7 +70,17 @@ exports.processTextWithGemini = async (text, patientID) => {
     const fileName = `analysis_${patientID}`;
     await saveClinicalAnalysis(fileName, parsedResult);
 
-    return parsedResult;
+    // Llamar a las funciones de riesgo
+    const obesityRisk = await getObesityRisk(parsedResult);
+    const diabetesRisk = await getDiabetesRisk(parsedResult);
+    const hypertensionRisk = await getHypertensionRisk(parsedResult);
+
+    return {
+      parsedResult,
+      obesityRisk,
+      diabetesRisk,
+      hypertensionRisk
+    };
 
   } catch (error) {
     console.error("Error processing text with Gemini:", error);
