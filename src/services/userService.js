@@ -10,7 +10,15 @@ const { v4: uuidv4 } = require("uuid");
  * @param {string} name - Nombre del usuario.
  * @param {number} height - Estatura del usuario en metros.
  * @param {number} weight - Peso del usuario en kilogramos.
+ * @returns {number}
  */
+
+function calculateIMC(weight, height) {
+  return weight / (height * height);
+}
+
+exports.calculateIMC = calculateIMC;
+
 exports.registerUser = async (phoneNumber, password, birthDate, userName, height, weight) => {
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -30,7 +38,7 @@ exports.registerUser = async (phoneNumber, password, birthDate, userName, height
       birth_date: birthDate,
       height: height, // Agregar estatura
       weight: weight, // Agregar peso
-      imc: weight / (height * height), // Calcular el IMC
+      imc: calculateIMC(weight, height), // Calcular el IMC
       created_at: new Date().toISOString(),
     };
 

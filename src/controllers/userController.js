@@ -2,7 +2,8 @@ const userService = require("../services/userService");
 
 exports.register = async (req, res) => {
   try {
-    const { phoneNumber, password, name, birthDate, height, weight } = req.body;
+    const { phoneNumber, password, personalInfo } = req.body;
+    const { name, birthDate, height, weight } = personalInfo;
 
     if (!phoneNumber || !password || !height || !weight || !name || !birthDate) {
       return res.errorResponse(

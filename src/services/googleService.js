@@ -1,15 +1,10 @@
-const fs = require("fs");
 const { GOOGLE_API_KEY } = require("../config/env");
 const formatOutput = require("./formatOutput");
 const { saveClinicalAnalysis } = require("./fileService");
-const { getObesityRisk, getDiabetesRisk, getHypertensionRisk } = require("./dataService");
-const {
-  GoogleGenerativeAI,
-  HarmCategory,
-  HarmBlockThreshold,
-} = require("@google/generative-ai");
+const { getObesityRisk, getDiabetesRisk, getHypertensionRisk, processTextWithGemini1 } = require("./dataService");
+const { GoogleGenerativeAI } = require("@google/generative-ai");
 
-const genAI = new GoogleGenerativeAI(GOOGLE_API_KEY);
+const genAI = new GoogleGenerativeAI("AIzaSyAOBtjjEMn6Bwqkw-hD54Eifx3Zpmgv2II");
 
 const model = genAI.getGenerativeModel({
   model: "gemini-2.0-flash-thinking-exp-01-21",
@@ -23,13 +18,24 @@ const generationConfig = {
   responseMimeType: "text/plain",
 };
 
-exports.processTextWithGemini = async (text, patientID) => {
+exports.processTextWithGemini = async (text, patientID, imc, edad) => {
   try {
+
+    // Llamar a la función de procesamiento de texto con Gemini
+    const { parsedResult1 } = await processTextWithGemini1(text);
+
+    // Llamar a las funciones de riesgo
+    const obesityRisk = await getObesityRisk(parsedResult1, imc);
+    const diabetesRisk = await getDiabetesRisk(parsedResult1);
+    const hypertensionRisk = await getHypertensionRisk(parsedResult1, edad);
+
     const archiveError = "El archivo no coincide con un reporte de análisis clínico.";
 
     const prompt = `Utiliza un formato JSON valido para todas tus respuestas. A continuación, tienes un formato JSON para el análisis clínico. Sigue este formato al procesar los datos y genera un diagnóstico basado en la información proporcionada.
     identifica todos y cada uno de los parametros clinicos en el texto y escribelos en base a la instruccion siguiente:   
     ${JSON.stringify(formatOutput, null, 2)} 
+    Se ha analizado previamente el archivo con sus parametros y se a determindo una probabilidad de enfermedad, si el valor es missing, tu puedes calcularlo con tus medios.
+    Obesidad: ${JSON.stringify(obesityRisk, null, 2)}, Diabetes: ${JSON.stringify(diabetesRisk, null, 2)}, Hipertension: ${JSON.stringify(hypertensionRisk, null, 2)},
     Revisa el nombre en el analisis y regresa el nombre del paciente, no el nombre del medico.
     Sigue las instrucciones en el apartado instruccion, no escribas la instruccion en el formato final.
     Asegurate de que los parametros clinicos esten escritos en el formato correcto y que el diagnostico final sea un resumen de los parametros relacionados a la enfermedad y una opinion medica.
@@ -48,42 +54,38 @@ exports.processTextWithGemini = async (text, patientID) => {
     // Escribir la respuesta de Gemini en la consola
     console.log("Primera respuesta de Gemini:", result);
 
-    // Eliminar cualquier texto antes de la primera llave { y después de la última llave }
-    const startIndex = result.indexOf("{");
-    const endIndex = result.lastIndexOf("}") + 1;
-    if (startIndex !== -1 && endIndex !== -1) {
-      result = result.substring(startIndex, endIndex);
-    }
+    // Limpiar la respuesta de Gemini
+    result = cleanGeminiResponse(result);
 
-    // Escribir la respuesta limpiada de Gemini en la consola
-    console.log("Respuesta limpiada de Gemini:", result);
+    // Parsear la respuesta de Gemini
+    const parsedResult = parseGeminiResponse(result);
 
-    let parsedResult;
-    try {
-      parsedResult = JSON.parse(result);
-    } catch (jsonError) {
-      console.error("La respuesta limpiada de Gemini no es un JSON válido:", result);
-      throw new Error("La respuesta limpiada de Gemini no es un JSON válido.");
-    }
+    // Guardar el análisis clínico
+    await saveClinicalAnalysis(`analysis_${patientID}`, parsedResult);
 
-    // Redirigir a la carpeta fija con un archivo genérico
-    const fileName = `analysis_${patientID}`;
-    await saveClinicalAnalysis(fileName, parsedResult);
-
-    // Llamar a las funciones de riesgo
-    const obesityRisk = await getObesityRisk(parsedResult);
-    const diabetesRisk = await getDiabetesRisk(parsedResult);
-    const hypertensionRisk = await getHypertensionRisk(parsedResult);
-
-    return {
-      parsedResult,
-      obesityRisk,
-      diabetesRisk,
-      hypertensionRisk
-    };
+    return { parsedResult };
 
   } catch (error) {
     console.error("Error processing text with Gemini:", error);
     throw error;
   }
 };
+
+function cleanGeminiResponse(result) {
+  const startIndex = result.indexOf("{");
+  const endIndex = result.lastIndexOf("}") + 1;
+  if (startIndex !== -1 && endIndex !== -1) {
+    result = result.substring(startIndex, endIndex);
+  }
+  console.log("Respuesta limpiada de Gemini:", result);
+  return result;
+}
+
+function parseGeminiResponse(result) {
+  try {
+    return JSON.parse(result);
+  } catch (jsonError) {
+    console.error("La respuesta limpiada de Gemini no es un JSON válido:", result);
+    throw new Error("La respuesta limpiada de Gemini no es un JSON válido.");
+  }
+}
