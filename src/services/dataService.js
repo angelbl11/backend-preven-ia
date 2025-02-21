@@ -2,7 +2,7 @@ const { GOOGLE_API_KEY } = require("../config/env");
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 const axios = require("axios");
 
-const genAI = new GoogleGenerativeAI("AIzaSyAOBtjjEMn6Bwqkw-hD54Eifx3Zpmgv2II");
+const genAI = new GoogleGenerativeAI(GOOGLE_API_KEY);
 
 const model = genAI.getGenerativeModel({
   model: "gemini-2.0-flash-thinking-exp-01-21",

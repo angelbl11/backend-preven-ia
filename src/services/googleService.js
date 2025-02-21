@@ -4,7 +4,7 @@ const { saveClinicalAnalysis } = require("./fileService");
 const { getObesityRisk, getDiabetesRisk, getHypertensionRisk, processTextWithGemini1 } = require("./dataService");
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 
-const genAI = new GoogleGenerativeAI("AIzaSyAOBtjjEMn6Bwqkw-hD54Eifx3Zpmgv2II");
+const genAI = new GoogleGenerativeAI(GOOGLE_API_KEY);
 
 const model = genAI.getGenerativeModel({
   model: "gemini-2.0-flash-thinking-exp-01-21",
