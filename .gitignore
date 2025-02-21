@@ -11,3 +11,5 @@ secrets/
 
 # Uploads folder    
 uploads/
+
+package-lock.json

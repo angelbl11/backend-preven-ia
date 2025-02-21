@@ -7,8 +7,6 @@ const Id = require("../controllers/fileController");
 const upload = multer({ dest: "uploads/" });
 const router = express.Router();
 
-let patientID = Id.patientID
-
 router.post(
   "/extract-content",
   upload.single("file"),

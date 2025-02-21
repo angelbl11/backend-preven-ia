@@ -6,11 +6,20 @@ const { v4: uuidv4 } = require("uuid");
  * Registra un usuario en la base de datos con los campos adicionales de estatura y peso.
  * @param {string} phoneNumber - Número de teléfono del usuario.
  * @param {string} password - Contraseña del usuario.
- * @param {object} personalInfo - Información personal del usuario (nombre, edad, etc.).
+ * @param {date} birthDate - Fecha de nacimiento del usuario.
+ * @param {string} name - Nombre del usuario.
  * @param {number} height - Estatura del usuario en metros.
  * @param {number} weight - Peso del usuario en kilogramos.
+ * @returns {number}
  */
-exports.registerUser = async (phoneNumber, password, personalInfo, height, weight) => {
+
+function calculateIMC(weight, height) {
+  return weight / (height * height);
+}
+
+exports.calculateIMC = calculateIMC;
+
+exports.registerUser = async (phoneNumber, password, birthDate, userName, height, weight) => {
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -25,10 +34,11 @@ exports.registerUser = async (phoneNumber, password, personalInfo, height, weigh
       userId: userId,
       phone_number: phoneNumber,
       password: hashedPassword,
-      personal_info: personalInfo,
+      name: userName,
+      birth_date: birthDate,
       height: height, // Agregar estatura
       weight: weight, // Agregar peso
-      imc: weight / (height * height), // Calcular el IMC
+      imc: calculateIMC(weight, height), // Calcular el IMC
       created_at: new Date().toISOString(),
     };
 
